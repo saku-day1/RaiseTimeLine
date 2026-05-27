@@ -1,0 +1,30 @@
+# 環境設定
+.env
+.env.local
+.env.*.local
+application-local.properties
+application-local.yml
+
+# Claude Code ローカル設定
+.claude/settings.local.json
+
+# ログ
+*.log
+.backend.log
+.frontend.log
+
+# ビルド成果物
+build/
+dist/
+target/
+node_modules/
+.gradle/
+
+# IDE
+.idea/
+.vscode/settings.json
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
