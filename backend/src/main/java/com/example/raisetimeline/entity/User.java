@@ -27,6 +27,9 @@ public class User {
     @Column(nullable = false, length = 50)
     private String username;
 
+    @Column(name = "display_name", nullable = false, length = 50)
+    private String displayName;
+
     @Column(length = 160)
     private String bio;
 
