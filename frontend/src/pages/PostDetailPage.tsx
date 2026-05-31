@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { getPost } from '../api/posts';
 import type { PostSummary } from '../types/post';
 import LikeButton from '../components/like/LikeButton';
@@ -8,6 +8,7 @@ import CommentForm from '../components/comment/CommentForm';
 
 export default function PostDetailPage() {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const [post, setPost] = useState<PostSummary | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -37,6 +38,12 @@ export default function PostDetailPage() {
 
   return (
     <div>
+      <button
+        onClick={() => navigate(-1)}
+        style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '14px', color: '#6b7280', background: 'none', border: 'none', cursor: 'pointer', padding: '12px 0', marginBottom: '4px' }}
+      >
+        ← タイムラインに戻る
+      </button>
       <article style={{ padding: '16px', borderBottom: '1px solid #e5e7eb', marginBottom: '16px' }}>
         <div style={{ display: 'flex', gap: '12px' }}>
           <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: '#d1d5db', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '20px' }}>
