@@ -6,3 +6,6 @@ export const register = (req: RegisterRequest) =>
 
 export const login = (req: LoginRequest) =>
   client.post<AuthResponse>('/api/auth/login', req).then((r) => r.data);
+
+export const logout = () =>
+  client.post('/api/auth/logout');
