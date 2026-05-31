@@ -21,4 +21,8 @@ public class RegisterRequest {
     @NotBlank
     @Size(min = 8)
     private String password;
+
+    @NotBlank
+    @Size(min = 1, max = 50)
+    private String displayName;
 }

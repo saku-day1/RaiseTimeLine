@@ -32,6 +32,7 @@ public class AuthService {
         User user = new User();
         user.setEmail(req.getEmail());
         user.setUsername(req.getUsername());
+        user.setDisplayName(req.getDisplayName());
         user.setPasswordHash(passwordEncoder.encode(req.getPassword()));
         userRepository.save(user);
 
@@ -75,6 +76,6 @@ public class AuthService {
         refreshToken.setExpiresAt(jwtTokenProvider.refreshTokenExpiresAt());
         refreshTokenRepository.save(refreshToken);
 
-        return new AuthResponse(accessToken, refreshToken.getToken(), user.getId(), user.getUsername());
+        return new AuthResponse(accessToken, refreshToken.getToken(), user.getId(), user.getUsername(), user.getDisplayName());
     }
 }

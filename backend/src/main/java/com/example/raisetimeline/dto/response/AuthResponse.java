@@ -12,8 +12,9 @@ public class AuthResponse {
     private String refreshToken;
     private Long userId;
     private String username;
+    private String displayName;
 
     public AuthResponse withoutRefreshToken() {
-        return new AuthResponse(token, null, userId, username);
+        return new AuthResponse(token, null, userId, username, displayName);
     }
 }
