@@ -20,7 +20,7 @@ export default function PostCard({ post, onLikeChange }: Props) {
         </div>
         <div style={{ flex: 1 }}>
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '4px' }}>
-            <span style={{ fontWeight: 'bold' }}>{post.username}</span>
+            <Link to={`/users/${post.userId}`} style={{ fontWeight: 'bold', textDecoration: 'none', color: 'inherit' }}>{post.username}</Link>
             <span style={{ color: '#9ca3af', fontSize: '13px' }}>{date}</span>
           </div>
           <Link to={`/posts/${post.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>

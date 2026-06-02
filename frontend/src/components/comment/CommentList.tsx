@@ -1,13 +1,14 @@
-import { useComments } from '../../hooks/useComments';
+import type { Comment } from '../../types/comment';
 import CommentItem from './CommentItem';
 
 interface Props {
-  postId: number;
+  comments: Comment[];
+  loading: boolean;
+  removeComment: (commentId: number) => Promise<void>;
   onDeleted: () => void;
 }
 
-export default function CommentList({ postId, onDeleted }: Props) {
-  const { comments, loading, removeComment } = useComments(postId);
+export default function CommentList({ comments, loading, removeComment, onDeleted }: Props) {
 
   const handleDelete = async (commentId: number) => {
     await removeComment(commentId);

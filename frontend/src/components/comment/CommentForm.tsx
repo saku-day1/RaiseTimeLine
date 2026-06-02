@@ -1,18 +1,17 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { useComments } from '../../hooks/useComments';
+import type { Comment } from '../../types/comment';
 
 interface Props {
-  postId: number;
+  addComment: (content: string) => Promise<Comment>;
   onSuccess: () => void;
 }
 
 const MAX_LENGTH = 200;
 
-export default function CommentForm({ postId, onSuccess }: Props) {
+export default function CommentForm({ addComment, onSuccess }: Props) {
   const { isAuthenticated } = useAuth();
-  const { addComment } = useComments(postId);
   const [content, setContent] = useState('');
   const [submitting, setSubmitting] = useState(false);
 

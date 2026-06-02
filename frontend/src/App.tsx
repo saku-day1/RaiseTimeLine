@@ -7,6 +7,8 @@ import RegisterPage from './pages/RegisterPage';
 import TimelinePage from './pages/TimelinePage';
 import PostDetailPage from './pages/PostDetailPage';
 import PostNewPage from './pages/PostNewPage';
+import UserSearchPage from './pages/UserSearchPage';
+import UserProfilePage from './pages/UserProfilePage';
 
 export default function App() {
   return (
@@ -27,6 +29,15 @@ export default function App() {
                 </PrivateRoute>
               }
             />
+            <Route
+              path="/search"
+              element={
+                <PrivateRoute>
+                  <UserSearchPage />
+                </PrivateRoute>
+              }
+            />
+            <Route path="/users/:id" element={<UserProfilePage />} />
           </Routes>
         </main>
       </AuthProvider>
