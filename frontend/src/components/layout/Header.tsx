@@ -19,6 +19,7 @@ export default function Header() {
         {isAuthenticated ? (
           <>
             <span style={{ color: '#6b7280' }}>{user?.username}</span>
+            <Link to="/search">ユーザー検索</Link>
             <Link to="/posts/new">投稿する</Link>
             <button onClick={handleLogout} style={{ cursor: 'pointer', background: 'none', border: '1px solid #e5e7eb', borderRadius: '4px', padding: '4px 12px' }}>
               ログアウト

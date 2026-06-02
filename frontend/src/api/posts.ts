@@ -1,8 +1,8 @@
 import client from './client';
 import type { PageResponse, PostSummary } from '../types/post';
 
-export const getPosts = (page = 0, size = 20) =>
-  client.get<PageResponse<PostSummary>>('/api/posts', { params: { page, size } }).then((r) => r.data);
+export const getPosts = (page = 0, size = 20, tab: 'all' | 'home' = 'all') =>
+  client.get<PageResponse<PostSummary>>('/api/posts', { params: { page, size, tab } }).then((r) => r.data);
 
 export const getPost = (id: number) =>
   client.get<PostSummary>(`/api/posts/${id}`).then((r) => r.data);

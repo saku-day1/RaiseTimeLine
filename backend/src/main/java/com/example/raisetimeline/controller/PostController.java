@@ -22,7 +22,14 @@ public class PostController {
     public ResponseEntity<Page<PostSummaryDto>> getAll(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "all") String tab,
             @AuthenticationPrincipal Long currentUserId) {
+        if ("home".equals(tab)) {
+            if (currentUserId == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+            return ResponseEntity.ok(postService.getFollowingPosts(page, size, currentUserId));
+        }
         return ResponseEntity.ok(postService.getAll(page, size, currentUserId));
     }
 

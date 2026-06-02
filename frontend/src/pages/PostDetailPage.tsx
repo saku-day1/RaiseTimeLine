@@ -1,16 +1,18 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { getPost } from '../api/posts';
 import type { PostSummary } from '../types/post';
 import LikeButton from '../components/like/LikeButton';
 import CommentList from '../components/comment/CommentList';
 import CommentForm from '../components/comment/CommentForm';
+import { useComments } from '../hooks/useComments';
 
 export default function PostDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [post, setPost] = useState<PostSummary | null>(null);
   const [loading, setLoading] = useState(true);
+  const { comments, loading: commentsLoading, addComment, removeComment } = useComments(Number(id) || 0);
 
   useEffect(() => {
     if (!id) return;
@@ -50,7 +52,7 @@ export default function PostDetailPage() {
             {post.username[0].toUpperCase()}
           </div>
           <div style={{ flex: 1 }}>
-            <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>{post.username}</div>
+            <Link to={`/users/${post.userId}`} style={{ fontWeight: 'bold', marginBottom: '4px', textDecoration: 'none', color: 'inherit' }}>{post.username}</Link>
             <div style={{ color: '#9ca3af', fontSize: '13px', marginBottom: '12px' }}>{date}</div>
             <p style={{ margin: '0 0 16px', lineHeight: '1.6', fontSize: '18px', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{post.content}</p>
             <div style={{ display: 'flex', gap: '24px', color: '#6b7280', fontSize: '15px', paddingTop: '12px', borderTop: '1px solid #f3f4f6' }}>
@@ -66,8 +68,8 @@ export default function PostDetailPage() {
         </div>
       </article>
 
-      <CommentForm postId={post.id} onSuccess={handleCommentAdded} />
-      <CommentList postId={post.id} onDeleted={handleCommentDeleted} />
+      <CommentForm addComment={addComment} onSuccess={handleCommentAdded} />
+      <CommentList comments={comments} loading={commentsLoading} removeComment={removeComment} onDeleted={handleCommentDeleted} />
     </div>
   );
 }

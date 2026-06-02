@@ -41,6 +41,17 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
+    public Page<PostSummaryDto> getFollowingPosts(int page, int size, Long currentUserId) {
+        Page<PostSummaryDto> posts = postRepository.findFollowingUsersPosts(currentUserId, PageRequest.of(page, size));
+        if (!posts.isEmpty()) {
+            List<Long> postIds = posts.getContent().stream().map(PostSummaryDto::getId).toList();
+            Set<Long> likedIds = likeRepository.findLikedPostIdsByUserIdAndPostIds(currentUserId, postIds);
+            posts.getContent().forEach(p -> p.setLiked(likedIds.contains(p.getId())));
+        }
+        return posts;
+    }
+
+    @Transactional(readOnly = true)
     public PostSummaryDto getById(Long postId, Long currentUserId) {
         PostSummaryDto post = postRepository.findByIdWithCounts(postId);
         if (post == null) {

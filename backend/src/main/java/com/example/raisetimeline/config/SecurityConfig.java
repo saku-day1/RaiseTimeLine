@@ -34,6 +34,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/posts/**").permitAll()
+                        // ユーザー検索・フォロー操作は認証必須（search はより先にマッチさせる）
+                        .requestMatchers(HttpMethod.GET, "/api/users/search").authenticated()
+                        // プロフィール・フォロワー・フォロー中一覧は全ユーザー閲覧可（F06仕様）
+                        .requestMatchers(HttpMethod.GET, "/api/users/*/followers", "/api/users/*/following").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/users/*").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
