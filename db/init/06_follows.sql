@@ -6,3 +6,6 @@ CREATE TABLE follows (
     CONSTRAINT uq_follows UNIQUE (follower_id, following_id),
     CONSTRAINT chk_no_self_follow CHECK (follower_id <> following_id)
 );
+
+CREATE INDEX idx_follows_follower_id  ON follows(follower_id);
+CREATE INDEX idx_follows_following_id ON follows(following_id);

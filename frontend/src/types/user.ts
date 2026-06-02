@@ -10,6 +10,7 @@ export type UserProfile = UserSummary & {
   bio: string | null;
   followerCount: number;
   followingCount: number;
+  followedBack: boolean;
 };
 
 export type FollowStatus = {

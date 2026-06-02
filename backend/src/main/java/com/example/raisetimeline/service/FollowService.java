@@ -86,6 +86,8 @@ public class FollowService {
                 .orElseThrow(() -> new ResourceNotFoundException("ユーザーが見つかりません"));
         boolean following = currentUserId != null
                 && followRepository.existsByFollowerIdAndFollowingId(currentUserId, targetUserId);
+        boolean followedBack = currentUserId != null
+                && followRepository.existsByFollowerIdAndFollowingId(targetUserId, currentUserId);
         long followerCount = followRepository.countByFollowingId(targetUserId);
         long followingCount = followRepository.countByFollowerId(targetUserId);
         return new UserProfileDto(
@@ -96,7 +98,8 @@ public class FollowService {
                 target.getBio(),
                 followerCount,
                 followingCount,
-                following
+                following,
+                followedBack
         );
     }
 

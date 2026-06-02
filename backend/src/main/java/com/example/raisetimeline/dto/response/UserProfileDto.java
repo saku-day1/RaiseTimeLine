@@ -8,5 +8,6 @@ public record UserProfileDto(
         String bio,
         long followerCount,
         long followingCount,
-        boolean following
+        boolean following,
+        boolean followedBack
 ) {}

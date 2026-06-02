@@ -100,6 +100,7 @@ function ProfileHeader({ profile, isMe, onFollowChange }: {
   onFollowChange: (following: boolean) => void;
 }) {
   const { following, loading, toggle } = useFollow(profile.id, profile.following);
+  const isMutual = following && profile.followedBack;
 
   const handleClick = async () => {
     await toggle();
@@ -118,6 +119,9 @@ function ProfileHeader({ profile, isMe, onFollowChange }: {
           <div>
             <div style={{ fontWeight: 'bold', fontSize: '18px' }}>{profile.displayName}</div>
             <div style={{ color: '#6b7280', fontSize: '14px' }}>@{profile.username}</div>
+            {isMutual && (
+              <div style={{ marginTop: '4px', fontSize: '12px', color: '#1d9bf0' }}>相互フォロー</div>
+            )}
             {profile.bio && <div style={{ marginTop: '6px', fontSize: '14px' }}>{profile.bio}</div>}
           </div>
         </div>
