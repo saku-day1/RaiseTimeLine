@@ -9,6 +9,7 @@ import PostDetailPage from './pages/PostDetailPage';
 import PostNewPage from './pages/PostNewPage';
 import UserSearchPage from './pages/UserSearchPage';
 import UserProfilePage from './pages/UserProfilePage';
+import MyProfilePage from './pages/MyProfilePage';
 
 export default function App() {
   return (
@@ -38,6 +39,14 @@ export default function App() {
               }
             />
             <Route path="/users/:id" element={<UserProfilePage />} />
+            <Route
+              path="/profile"
+              element={
+                <PrivateRoute>
+                  <MyProfilePage />
+                </PrivateRoute>
+              }
+            />
           </Routes>
         </main>
       </AuthProvider>
