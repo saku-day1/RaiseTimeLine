@@ -95,6 +95,7 @@ public class FollowService {
                 target.getUsername(),
                 target.getDisplayName(),
                 target.getProfileImageUrl(),
+                target.getHeaderImageUrl(),
                 target.getBio(),
                 followerCount,
                 followingCount,

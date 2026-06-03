@@ -7,6 +7,7 @@ export type UserSummary = {
 };
 
 export type UserProfile = UserSummary & {
+  headerImageUrl: string | null;
   bio: string | null;
   followerCount: number;
   followingCount: number;

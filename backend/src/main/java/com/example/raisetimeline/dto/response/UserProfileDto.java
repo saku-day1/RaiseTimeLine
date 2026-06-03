@@ -5,6 +5,7 @@ public record UserProfileDto(
         String username,
         String displayName,
         String profileImageUrl,
+        String headerImageUrl,
         String bio,
         long followerCount,
         long followingCount,
