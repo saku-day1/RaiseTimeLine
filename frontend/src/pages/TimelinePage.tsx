@@ -109,7 +109,7 @@ export default function TimelinePage() {
       {!loading && current.initialized && current.posts.length === 0 && (
         <p style={{ textAlign: 'center', color: '#9ca3af' }}>
           {activeTab === 'home'
-            ? 'フォロー中のユーザーの投稿はありません。誰かをフォローしてみましょう！'
+            ? 'まだ投稿がありません。誰かをフォローするか、自分で投稿してみましょう！'
             : '投稿がありません'}
         </p>
       )}

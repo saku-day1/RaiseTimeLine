@@ -20,8 +20,12 @@ export default function PostCard({ post, onLikeChange, onDelete }: Props) {
 
   const handleDelete = async () => {
     if (!confirm('この投稿を削除しますか？')) return;
-    await deletePost(post.id);
-    onDelete?.(post.id);
+    try {
+      await deletePost(post.id);
+      onDelete?.(post.id);
+    } catch {
+      alert('削除に失敗しました。もう一度お試しください。');
+    }
   };
 
   return (
