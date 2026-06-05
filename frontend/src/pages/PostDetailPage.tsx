@@ -54,7 +54,16 @@ export default function PostDetailPage() {
           <div style={{ flex: 1 }}>
             <Link to={`/users/${post.userId}`} style={{ fontWeight: 'bold', marginBottom: '4px', textDecoration: 'none', color: 'inherit' }}>{post.username}</Link>
             <div style={{ color: '#9ca3af', fontSize: '13px', marginBottom: '12px' }}>{date}</div>
-            <p style={{ margin: '0 0 16px', lineHeight: '1.6', fontSize: '18px', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{post.content}</p>
+            {post.content && (
+              <p style={{ margin: '0 0 12px', lineHeight: '1.6', fontSize: '18px', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{post.content}</p>
+            )}
+            {post.imageUrl && (
+              <img
+                src={post.imageUrl}
+                alt="投稿画像"
+                style={{ maxWidth: '100%', borderRadius: '12px', display: 'block', marginBottom: '16px' }}
+              />
+            )}
             <div style={{ display: 'flex', gap: '24px', color: '#6b7280', fontSize: '15px', paddingTop: '12px', borderTop: '1px solid #f3f4f6' }}>
               <LikeButton
                 postId={post.id}

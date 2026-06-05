@@ -24,7 +24,16 @@ export default function PostCard({ post, onLikeChange }: Props) {
             <span style={{ color: '#9ca3af', fontSize: '13px' }}>{date}</span>
           </div>
           <Link to={`/posts/${post.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-            <p style={{ margin: '0 0 12px', lineHeight: '1.5', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{post.content}</p>
+            {post.content && (
+              <p style={{ margin: '0 0 8px', lineHeight: '1.5', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{post.content}</p>
+            )}
+            {post.imageUrl && (
+              <img
+                src={post.imageUrl}
+                alt="投稿画像"
+                style={{ maxWidth: '100%', maxHeight: '400px', borderRadius: '12px', display: 'block', marginBottom: '12px', objectFit: 'cover' }}
+              />
+            )}
           </Link>
           <div style={{ display: 'flex', gap: '24px', color: '#6b7280', fontSize: '14px' }}>
             <LikeButton

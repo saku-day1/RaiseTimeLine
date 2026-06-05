@@ -73,6 +73,12 @@ public class PostService {
 
     @Transactional
     public PostSummaryDto create(CreatePostRequest req, Long userId) {
+        boolean hasContent = req.getContent() != null && !req.getContent().isBlank();
+        boolean hasImage = req.getImageUrl() != null && !req.getImageUrl().isBlank();
+        if (!hasContent && !hasImage) {
+            throw new IllegalArgumentException("テキストまたは画像のいずれかが必要です");
+        }
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("ユーザーが見つかりません"));
 

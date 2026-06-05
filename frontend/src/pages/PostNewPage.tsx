@@ -11,6 +11,7 @@ export default function PostNewPage() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [imageError, setImageError] = useState('');
+  const [submitError, setSubmitError] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
 
@@ -38,18 +39,24 @@ export default function PostNewPage() {
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
+  const canSubmit = content.trim().length > 0 || selectedFile !== null;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!content.trim()) return;
+    if (!canSubmit) return;
     setSubmitting(true);
+    setSubmitError('');
     try {
       let imageUrl: string | undefined;
       if (selectedFile) {
         const result = await uploadPostImage(selectedFile);
         imageUrl = result.imageUrl;
       }
-      await createPost(content, imageUrl);
+      await createPost(content || '', imageUrl);
       navigate('/');
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : '投稿に失敗しました';
+      setSubmitError(msg);
     } finally {
       setSubmitting(false);
     }
@@ -89,6 +96,10 @@ export default function PostNewPage() {
           <p style={{ color: '#ef4444', fontSize: '13px', marginTop: '4px' }}>{imageError}</p>
         )}
 
+        {submitError && (
+          <p style={{ color: '#ef4444', fontSize: '13px', marginTop: '4px' }}>{submitError}</p>
+        )}
+
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <button
@@ -112,8 +123,8 @@ export default function PostNewPage() {
           </div>
           <button
             type="submit"
-            disabled={!content.trim() || submitting}
-            style={{ padding: '8px 24px', backgroundColor: content.trim() ? '#1d4ed8' : '#9ca3af', color: 'white', border: 'none', borderRadius: '4px', cursor: content.trim() ? 'pointer' : 'not-allowed' }}
+            disabled={!canSubmit || submitting}
+            style={{ padding: '8px 24px', backgroundColor: canSubmit ? '#1d4ed8' : '#9ca3af', color: 'white', border: 'none', borderRadius: '4px', cursor: canSubmit ? 'pointer' : 'not-allowed' }}
           >
             {submitting ? '投稿中...' : '投稿する'}
           </button>
