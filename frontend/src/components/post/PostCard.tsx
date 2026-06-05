@@ -1,16 +1,28 @@
 import { Link } from 'react-router-dom';
 import type { PostSummary } from '../../types/post';
 import LikeButton from '../like/LikeButton';
+import { useAuth } from '../../contexts/AuthContext';
+import { deletePost } from '../../api/posts';
 
 interface Props {
   post: PostSummary;
   onLikeChange?: (postId: number, liked: boolean, count: number) => void;
+  onDelete?: (postId: number) => void;
 }
 
-export default function PostCard({ post, onLikeChange }: Props) {
+export default function PostCard({ post, onLikeChange, onDelete }: Props) {
+  const { user } = useAuth();
+  const isOwner = user?.userId === post.userId;
+
   const date = new Date(post.createdAt).toLocaleString('ja-JP', {
     month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit',
   });
+
+  const handleDelete = async () => {
+    if (!confirm('この投稿を削除しますか？')) return;
+    await deletePost(post.id);
+    onDelete?.(post.id);
+  };
 
   return (
     <article style={{ padding: '16px', borderBottom: '1px solid #e5e7eb' }}>
@@ -19,9 +31,20 @@ export default function PostCard({ post, onLikeChange }: Props) {
           {post.username[0].toUpperCase()}
         </div>
         <div style={{ flex: 1 }}>
-          <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '4px' }}>
-            <Link to={`/users/${post.userId}`} style={{ fontWeight: 'bold', textDecoration: 'none', color: 'inherit' }}>{post.username}</Link>
-            <span style={{ color: '#9ca3af', fontSize: '13px' }}>{date}</span>
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '4px', justifyContent: 'space-between' }}>
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+              <Link to={`/users/${post.userId}`} style={{ fontWeight: 'bold', textDecoration: 'none', color: 'inherit' }}>{post.username}</Link>
+              <span style={{ color: '#9ca3af', fontSize: '13px' }}>{date}</span>
+            </div>
+            {isOwner && (
+              <button
+                onClick={handleDelete}
+                style={{ background: 'none', border: 'none', color: '#9ca3af', cursor: 'pointer', fontSize: '13px', padding: '2px 6px', borderRadius: '4px' }}
+                title="削除"
+              >
+                🗑
+              </button>
+            )}
           </div>
           <Link to={`/posts/${post.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
             {post.content && (
