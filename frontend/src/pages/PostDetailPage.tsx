@@ -37,8 +37,12 @@ export default function PostDetailPage() {
 
   const handleDelete = async () => {
     if (!post || !confirm('この投稿を削除しますか？')) return;
-    await deletePost(post.id);
-    navigate('/');
+    try {
+      await deletePost(post.id);
+      navigate('/');
+    } catch {
+      alert('削除に失敗しました。もう一度お試しください。');
+    }
   };
 
   if (loading) return <p>読み込み中...</p>;
