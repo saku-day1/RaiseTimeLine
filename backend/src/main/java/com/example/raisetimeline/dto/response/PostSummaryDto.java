@@ -9,11 +9,11 @@ public class PostSummaryDto {
 
     private final Long id;
     private final String content;
-    private final String imageUrl;
+    private String imageUrl;
     private final LocalDateTime createdAt;
     private final Long userId;
     private final String username;
-    private final String profileImageUrl;
+    private String profileImageUrl;
     private final long likeCount;
     private final long commentCount;
     private boolean liked;
@@ -34,5 +34,13 @@ public class PostSummaryDto {
 
     public void setLiked(boolean liked) {
         this.liked = liked;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public void setProfileImageUrl(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
     }
 }

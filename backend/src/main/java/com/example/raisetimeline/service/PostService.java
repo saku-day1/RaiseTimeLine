@@ -14,7 +14,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
@@ -25,16 +27,19 @@ public class PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final LikeRepository likeRepository;
+    private final S3Service s3Service;
 
     @Transactional(readOnly = true)
     public Page<PostSummaryDto> getAll(int page, int size, Long currentUserId) {
         Page<PostSummaryDto> posts = postRepository.findAllWithCounts(PageRequest.of(page, size));
 
-        if (currentUserId != null && !posts.isEmpty()) {
-            // N+1防止: IN句で一括取得
-            List<Long> postIds = posts.getContent().stream().map(PostSummaryDto::getId).toList();
-            Set<Long> likedIds = likeRepository.findLikedPostIdsByUserIdAndPostIds(currentUserId, postIds);
-            posts.getContent().forEach(p -> p.setLiked(likedIds.contains(p.getId())));
+        if (!posts.isEmpty()) {
+            resolveImageUrls(posts.getContent());
+            if (currentUserId != null) {
+                List<Long> postIds = posts.getContent().stream().map(PostSummaryDto::getId).toList();
+                Set<Long> likedIds = likeRepository.findLikedPostIdsByUserIdAndPostIds(currentUserId, postIds);
+                posts.getContent().forEach(p -> p.setLiked(likedIds.contains(p.getId())));
+            }
         }
 
         return posts;
@@ -44,6 +49,7 @@ public class PostService {
     public Page<PostSummaryDto> getFollowingPosts(int page, int size, Long currentUserId) {
         Page<PostSummaryDto> posts = postRepository.findFollowingUsersPosts(currentUserId, PageRequest.of(page, size));
         if (!posts.isEmpty()) {
+            resolveImageUrls(posts.getContent());
             List<Long> postIds = posts.getContent().stream().map(PostSummaryDto::getId).toList();
             Set<Long> likedIds = likeRepository.findLikedPostIdsByUserIdAndPostIds(currentUserId, postIds);
             posts.getContent().forEach(p -> p.setLiked(likedIds.contains(p.getId())));
@@ -57,6 +63,7 @@ public class PostService {
         if (post == null) {
             throw new ResourceNotFoundException("投稿が見つかりません");
         }
+        resolveImageUrls(List.of(post));
         if (currentUserId != null) {
             boolean liked = likeRepository.existsByPostIdAndUserId(postId, currentUserId);
             post.setLiked(liked);
@@ -66,6 +73,12 @@ public class PostService {
 
     @Transactional
     public PostSummaryDto create(CreatePostRequest req, Long userId) {
+        boolean hasContent = req.getContent() != null && !req.getContent().isBlank();
+        boolean hasImage = req.getImageUrl() != null && !req.getImageUrl().isBlank();
+        if (!hasContent && !hasImage) {
+            throw new IllegalArgumentException("テキストまたは画像のいずれかが必要です");
+        }
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("ユーザーが見つかりません"));
 
@@ -75,7 +88,14 @@ public class PostService {
         post.setImageUrl(req.getImageUrl());
         postRepository.save(post);
 
-        return postRepository.findByIdWithCounts(post.getId());
+        PostSummaryDto dto = postRepository.findByIdWithCounts(post.getId());
+        resolveImageUrls(List.of(dto));
+        return dto;
+    }
+
+    public String uploadPostImage(Long userId, MultipartFile file) throws IOException {
+        String key = s3Service.uploadImage("posts", userId, file);
+        return s3Service.generatePresignedUrl(key);
     }
 
     @Transactional
@@ -88,5 +108,12 @@ public class PostService {
         }
 
         postRepository.delete(post);
+    }
+
+    private void resolveImageUrls(List<PostSummaryDto> posts) {
+        posts.forEach(p -> {
+            p.setImageUrl(s3Service.resolveUrl(p.getImageUrl()));
+            p.setProfileImageUrl(s3Service.resolveUrl(p.getProfileImageUrl()));
+        });
     }
 }

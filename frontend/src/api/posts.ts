@@ -7,6 +7,12 @@ export const getPosts = (page = 0, size = 20, tab: 'all' | 'home' = 'all') =>
 export const getPost = (id: number) =>
   client.get<PostSummary>(`/api/posts/${id}`).then((r) => r.data);
 
+export const uploadPostImage = (file: File) => {
+  const form = new FormData();
+  form.append('file', file);
+  return client.post<{ imageUrl: string }>('/api/posts/image', form).then((r) => r.data);
+};
+
 export const createPost = (content: string, imageUrl?: string) =>
   client.post<PostSummary>('/api/posts', { content, imageUrl }).then((r) => r.data);
 
