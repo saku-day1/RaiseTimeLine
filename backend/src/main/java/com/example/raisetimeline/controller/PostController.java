@@ -10,6 +10,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/posts")
@@ -38,6 +42,14 @@ public class PostController {
             @PathVariable Long id,
             @AuthenticationPrincipal Long currentUserId) {
         return ResponseEntity.ok(postService.getById(id, currentUserId));
+    }
+
+    @PostMapping("/image")
+    public ResponseEntity<Map<String, String>> uploadImage(
+            @RequestParam("file") MultipartFile file,
+            @AuthenticationPrincipal Long currentUserId) throws IOException {
+        String imageUrl = postService.uploadPostImage(currentUserId, file);
+        return ResponseEntity.ok(Map.of("imageUrl", imageUrl));
     }
 
     @PostMapping
