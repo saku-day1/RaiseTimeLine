@@ -65,6 +65,14 @@ export default function TimelinePage() {
     }));
   };
 
+  const handleDelete = (postId: number) => {
+    setTabStates((prev) => ({
+      ...prev,
+      home: { ...prev.home, posts: prev.home.posts.filter((p) => p.id !== postId) },
+      all: { ...prev.all, posts: prev.all.posts.filter((p) => p.id !== postId) },
+    }));
+  };
+
   const current = tabStates[activeTab];
 
   const tabStyle = (tab: Tab): React.CSSProperties => ({
@@ -93,7 +101,7 @@ export default function TimelinePage() {
       </div>
 
       {current.posts.map((post) => (
-        <PostCard key={post.id} post={post} onLikeChange={handleLikeChange} />
+        <PostCard key={post.id} post={post} onLikeChange={handleLikeChange} onDelete={handleDelete} />
       ))}
 
       {loading && <p style={{ textAlign: 'center', color: '#9ca3af' }}>読み込み中...</p>}

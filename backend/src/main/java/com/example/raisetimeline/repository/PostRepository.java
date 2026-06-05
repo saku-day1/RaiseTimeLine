@@ -51,9 +51,10 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             )
             FROM Post p
             JOIN p.user u
-            JOIN Follow f ON f.following.id = u.id AND f.follower.id = :currentUserId
             LEFT JOIN Like l ON l.post.id = p.id
             LEFT JOIN Comment c ON c.post.id = p.id
+            WHERE p.user.id = :currentUserId
+               OR p.user.id IN (SELECT f.following.id FROM Follow f WHERE f.follower.id = :currentUserId)
             GROUP BY p.id, p.content, p.imageUrl, p.createdAt,
                      p.user.id, p.user.username, p.user.profileImageUrl
             ORDER BY p.createdAt DESC

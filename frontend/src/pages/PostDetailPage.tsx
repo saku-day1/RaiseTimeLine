@@ -1,15 +1,17 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { getPost } from '../api/posts';
+import { getPost, deletePost } from '../api/posts';
 import type { PostSummary } from '../types/post';
 import LikeButton from '../components/like/LikeButton';
 import CommentList from '../components/comment/CommentList';
 import CommentForm from '../components/comment/CommentForm';
 import { useComments } from '../hooks/useComments';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function PostDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [post, setPost] = useState<PostSummary | null>(null);
   const [loading, setLoading] = useState(true);
   const { comments, loading: commentsLoading, addComment, removeComment } = useComments(Number(id) || 0);
@@ -33,6 +35,12 @@ export default function PostDetailPage() {
     setPost((prev) => prev ? { ...prev, commentCount: Math.max(0, prev.commentCount - 1) } : prev);
   };
 
+  const handleDelete = async () => {
+    if (!post || !confirm('この投稿を削除しますか？')) return;
+    await deletePost(post.id);
+    navigate('/');
+  };
+
   if (loading) return <p>読み込み中...</p>;
   if (!post) return <p>投稿が見つかりません</p>;
 
@@ -52,7 +60,18 @@ export default function PostDetailPage() {
             {post.username[0].toUpperCase()}
           </div>
           <div style={{ flex: 1 }}>
-            <Link to={`/users/${post.userId}`} style={{ fontWeight: 'bold', marginBottom: '4px', textDecoration: 'none', color: 'inherit' }}>{post.username}</Link>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+              <Link to={`/users/${post.userId}`} style={{ fontWeight: 'bold', textDecoration: 'none', color: 'inherit' }}>{post.username}</Link>
+              {user?.userId === post.userId && (
+                <button
+                  onClick={handleDelete}
+                  style={{ background: 'none', border: 'none', color: '#9ca3af', cursor: 'pointer', fontSize: '13px', padding: '2px 6px', borderRadius: '4px' }}
+                  title="削除"
+                >
+                  🗑 削除
+                </button>
+              )}
+            </div>
             <div style={{ color: '#9ca3af', fontSize: '13px', marginBottom: '12px' }}>{date}</div>
             {post.content && (
               <p style={{ margin: '0 0 12px', lineHeight: '1.6', fontSize: '18px', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{post.content}</p>
