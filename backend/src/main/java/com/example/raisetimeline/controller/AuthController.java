@@ -4,6 +4,9 @@ import com.example.raisetimeline.dto.request.LoginRequest;
 import com.example.raisetimeline.dto.request.RegisterRequest;
 import com.example.raisetimeline.dto.response.AuthResponse;
 import com.example.raisetimeline.service.AuthService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +22,7 @@ import java.time.Duration;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
+@Tag(name = "認証", description = "ユーザー登録・ログイン・トークン管理")
 public class AuthController {
 
     private final AuthService authService;
@@ -26,6 +30,8 @@ public class AuthController {
     @Value("${jwt.refresh-expiration-days}")
     private int refreshExpirationDays;
 
+    @Operation(summary = "ユーザー登録", description = "新規ユーザーを作成します。RefreshToken は HttpOnly Cookie にセットされます。")
+    @SecurityRequirements
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(
             @Valid @RequestBody RegisterRequest req,
@@ -35,6 +41,8 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.CREATED).body(body.withoutRefreshToken());
     }
 
+    @Operation(summary = "ログイン", description = "メールアドレスとパスワードで認証し、アクセストークンを返します。")
+    @SecurityRequirements
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(
             @Valid @RequestBody LoginRequest req,
@@ -44,6 +52,8 @@ public class AuthController {
         return ResponseEntity.ok(body.withoutRefreshToken());
     }
 
+    @Operation(summary = "トークン更新", description = "HttpOnly Cookie の refreshToken を使ってアクセストークンを再発行します。")
+    @SecurityRequirements
     @PostMapping("/refresh")
     public ResponseEntity<AuthResponse> refresh(
             @CookieValue(name = "refreshToken", required = false) String refreshToken,
@@ -56,6 +66,7 @@ public class AuthController {
         return ResponseEntity.ok(body.withoutRefreshToken());
     }
 
+    @Operation(summary = "ログアウト", description = "refreshToken Cookie をクリアしてセッションを終了します。")
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletResponse response) {
         clearRefreshTokenCookie(response);
