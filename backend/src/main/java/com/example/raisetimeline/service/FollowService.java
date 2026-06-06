@@ -22,6 +22,7 @@ public class FollowService {
 
     private final FollowRepository followRepository;
     private final UserRepository userRepository;
+    private final S3Service s3Service;
 
     @Transactional
     public FollowStatusResponse follow(Long targetUserId, Long currentUserId) {
@@ -74,7 +75,7 @@ public class FollowService {
                         u.getId(),
                         u.getUsername(),
                         u.getDisplayName(),
-                        u.getProfileImageUrl(),
+                        s3Service.resolveUrl(u.getProfileImageUrl()),
                         followingIds.contains(u.getId())
                 ))
                 .toList();
@@ -114,7 +115,7 @@ public class FollowService {
                 ? Set.copyOf(followRepository.findFollowingIdsByFollowerId(currentUserId))
                 : Set.of();
         return followers.stream()
-                .map(u -> new UserSummaryDto(u.getId(), u.getUsername(), u.getDisplayName(), u.getProfileImageUrl(), followingIds.contains(u.getId())))
+                .map(u -> new UserSummaryDto(u.getId(), u.getUsername(), u.getDisplayName(), s3Service.resolveUrl(u.getProfileImageUrl()), followingIds.contains(u.getId())))
                 .toList();
     }
 
@@ -128,7 +129,7 @@ public class FollowService {
                 ? Set.copyOf(followRepository.findFollowingIdsByFollowerId(currentUserId))
                 : Set.of();
         return followings.stream()
-                .map(u -> new UserSummaryDto(u.getId(), u.getUsername(), u.getDisplayName(), u.getProfileImageUrl(), followingIds.contains(u.getId())))
+                .map(u -> new UserSummaryDto(u.getId(), u.getUsername(), u.getDisplayName(), s3Service.resolveUrl(u.getProfileImageUrl()), followingIds.contains(u.getId())))
                 .toList();
     }
 
