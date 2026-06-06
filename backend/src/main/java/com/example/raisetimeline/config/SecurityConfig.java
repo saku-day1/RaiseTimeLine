@@ -34,6 +34,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/uploads/**").permitAll()
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/posts/**").permitAll()
                         // ユーザー検索・フォロー操作は認証必須（search はより先にマッチさせる）
                         .requestMatchers(HttpMethod.GET, "/api/users/search").authenticated()
