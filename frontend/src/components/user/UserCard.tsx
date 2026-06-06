@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import type { UserSummary } from '../../types/user';
 import { useFollow } from '../../hooks/useFollow';
 
@@ -16,7 +17,7 @@ export default function UserCard({ user, onFollowChange }: Props) {
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 0', borderBottom: '1px solid #eee' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+      <Link to={`/users/${user.id}`} style={{ display: 'flex', alignItems: 'center', gap: '12px', textDecoration: 'none', color: 'inherit' }}>
         <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#ccc', overflow: 'hidden', flexShrink: 0 }}>
           {user.profileImageUrl && (
             <img src={user.profileImageUrl} alt={user.username} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -26,7 +27,7 @@ export default function UserCard({ user, onFollowChange }: Props) {
           <div style={{ fontWeight: 'bold', fontSize: '14px' }}>{user.displayName}</div>
           <div style={{ color: '#555', fontSize: '13px' }}>@{user.username}</div>
         </div>
-      </div>
+      </Link>
       <button
         onClick={handleClick}
         disabled={loading}
