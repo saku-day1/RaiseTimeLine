@@ -35,11 +35,14 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/uploads/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
+                        // いいね状態確認は認証必須（匿名ユーザーに "me" の概念がないため）
+                        .requestMatchers(HttpMethod.GET, "/api/posts/*/likes/me").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/posts/**").permitAll()
                         // ユーザー検索・フォロー操作は認証必須（search はより先にマッチさせる）
                         .requestMatchers(HttpMethod.GET, "/api/users/search").authenticated()
-                        // プロフィール・フォロワー・フォロー中一覧は全ユーザー閲覧可（F06仕様）
+                        // プロフィール・フォロワー・フォロー中一覧・フォロー状態は全ユーザー閲覧可（F06仕様）
                         .requestMatchers(HttpMethod.GET, "/api/users/*/followers", "/api/users/*/following").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/users/*/follow/status").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/users/*").permitAll()
                         .anyRequest().authenticated()
                 )
