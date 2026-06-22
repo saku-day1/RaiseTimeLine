@@ -9,12 +9,14 @@ import com.example.raisetimeline.entity.User;
 import com.example.raisetimeline.repository.RefreshTokenRepository;
 import com.example.raisetimeline.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -35,6 +37,7 @@ public class AuthService {
         user.setDisplayName(req.getDisplayName());
         user.setPasswordHash(passwordEncoder.encode(req.getPassword()));
         userRepository.save(user);
+        log.info("event=auth.register.success userId={}", user.getId());
 
         return buildAuthResponse(user);
     }
@@ -42,13 +45,18 @@ public class AuthService {
     @Transactional
     public AuthResponse login(LoginRequest req) {
         User user = userRepository.findByEmail(req.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("メールアドレスまたはパスワードが正しくありません"));
+                .orElseThrow(() -> {
+                    log.warn("event=auth.login.failure reason=email_not_found");
+                    return new IllegalArgumentException("メールアドレスまたはパスワードが正しくありません");
+                });
 
         if (!passwordEncoder.matches(req.getPassword(), user.getPasswordHash())) {
+            log.warn("event=auth.login.failure reason=password_mismatch userId={}", user.getId());
             throw new IllegalArgumentException("メールアドレスまたはパスワードが正しくありません");
         }
 
         refreshTokenRepository.deleteByUserId(user.getId());
+        log.info("event=auth.login.success userId={}", user.getId());
         return buildAuthResponse(user);
     }
 
@@ -59,6 +67,7 @@ public class AuthService {
 
         if (stored.isExpired()) {
             refreshTokenRepository.delete(stored);
+            log.warn("event=auth.refresh.failure reason=expired userId={}", stored.getUser().getId());
             throw new IllegalArgumentException("リフレッシュトークンの有効期限が切れています");
         }
 

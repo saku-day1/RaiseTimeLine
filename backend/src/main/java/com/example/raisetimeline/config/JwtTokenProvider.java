@@ -2,6 +2,7 @@ package com.example.raisetimeline.config;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HexFormat;
 
+@Slf4j
 @Component
 public class JwtTokenProvider {
 
@@ -55,6 +57,7 @@ public class JwtTokenProvider {
             Jwts.parser().verifyWith(key).build().parseSignedClaims(token);
             return true;
         } catch (JwtException | IllegalArgumentException e) {
+            log.warn("event=auth.jwt.validation_failure reason={}", e.getMessage());
             return false;
         }
     }
