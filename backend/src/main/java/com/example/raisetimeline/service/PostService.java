@@ -10,6 +10,7 @@ import com.example.raisetimeline.repository.LikeRepository;
 import com.example.raisetimeline.repository.PostRepository;
 import com.example.raisetimeline.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PostService {
@@ -90,6 +92,7 @@ public class PostService {
 
         PostSummaryDto dto = postRepository.findByIdWithCounts(post.getId());
         resolveImageUrls(List.of(dto));
+        log.info("event=post.create.success userId={} postId={}", userId, post.getId());
         return dto;
     }
 
@@ -108,6 +111,7 @@ public class PostService {
         }
 
         postRepository.delete(post);
+        log.info("event=post.delete.success userId={} postId={}", userId, postId);
     }
 
     private void resolveImageUrls(List<PostSummaryDto> posts) {

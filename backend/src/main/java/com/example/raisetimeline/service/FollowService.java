@@ -10,12 +10,14 @@ import com.example.raisetimeline.exception.ResourceNotFoundException;
 import com.example.raisetimeline.repository.FollowRepository;
 import com.example.raisetimeline.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Set;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class FollowService {
@@ -40,6 +42,7 @@ public class FollowService {
             follow.setFollower(current);
             follow.setFollowing(target);
             followRepository.save(follow);
+            log.info("event=follow.add.success userId={} targetUserId={}", currentUserId, targetUserId);
         }
 
         return buildStatus(targetUserId, currentUserId);
@@ -53,6 +56,7 @@ public class FollowService {
 
         followRepository.findByFollowerIdAndFollowingId(currentUserId, targetUserId)
                 .ifPresent(followRepository::delete);
+        log.info("event=follow.remove.success userId={} targetUserId={}", currentUserId, targetUserId);
 
         return buildStatus(targetUserId, currentUserId);
     }

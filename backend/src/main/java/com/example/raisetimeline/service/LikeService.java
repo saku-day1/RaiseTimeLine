@@ -9,9 +9,11 @@ import com.example.raisetimeline.repository.LikeRepository;
 import com.example.raisetimeline.repository.PostRepository;
 import com.example.raisetimeline.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class LikeService {
@@ -37,6 +39,7 @@ public class LikeService {
         like.setPost(post);
         like.setUser(user);
         likeRepository.save(like);
+        log.info("event=like.add.success userId={} postId={}", userId, postId);
 
         return new LikeStatusResponse(true, likeRepository.countByPostId(postId));
     }
@@ -50,6 +53,7 @@ public class LikeService {
         // べき等設計: いいねがなければそのまま返す
         likeRepository.findByPostIdAndUserId(postId, userId)
                 .ifPresent(likeRepository::delete);
+        log.info("event=like.remove.success userId={} postId={}", userId, postId);
 
         return new LikeStatusResponse(false, likeRepository.countByPostId(postId));
     }

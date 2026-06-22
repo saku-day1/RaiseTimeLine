@@ -11,11 +11,13 @@ import com.example.raisetimeline.repository.CommentRepository;
 import com.example.raisetimeline.repository.PostRepository;
 import com.example.raisetimeline.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CommentService {
@@ -48,6 +50,7 @@ public class CommentService {
         comment.setUser(user);
         comment.setContent(req.getContent());
         commentRepository.save(comment);
+        log.info("event=comment.create.success userId={} postId={} commentId={}", userId, postId, comment.getId());
 
         return new CommentResponse(comment);
     }
@@ -62,5 +65,6 @@ public class CommentService {
         }
 
         commentRepository.delete(comment);
+        log.info("event=comment.delete.success userId={} commentId={}", userId, commentId);
     }
 }

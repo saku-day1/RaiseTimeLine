@@ -1,9 +1,11 @@
 package com.example.raisetimeline.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.core.exception.SdkException;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
@@ -14,6 +16,7 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class S3Service {
@@ -39,8 +42,14 @@ public class S3Service {
                 .contentType(file.getContentType())
                 .build();
 
-        s3Client.putObject(request, RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
+        try {
+            s3Client.putObject(request, RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
+        } catch (SdkException e) {
+            log.error("event=s3.upload.failure userId={} key={} error={}", userId, key, e.getMessage(), e);
+            throw e;
+        }
 
+        log.info("event=s3.upload.success userId={} key={}", userId, key);
         return key;
     }
 
